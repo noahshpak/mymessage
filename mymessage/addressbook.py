@@ -1,6 +1,8 @@
 import sys
 import os
 import sqlite3
+import itertools
+import threading
 from pprint import pprint
 
 class AddressBook(object):
@@ -16,7 +18,7 @@ class AddressBook(object):
         res = self.query(email)
         if res:
             for k in res.keys():
-                return " ".join(res[k][:2])
+                return " ".join(res[k][:2]).replace('None', '')
         else:
             return ""
 
@@ -31,7 +33,7 @@ class AddressBook(object):
         sources = os.listdir(os.path.expanduser("~/Library/Application Support/AddressBook/Sources"))
         rows = []
 
-        for source in sources:
+        for i, source in enumerate(sources):
             if source != '.DS_Store':
                 newrows = self.query_source_db(keyword, os.path.expanduser(os.path.join("~/Library/Application Support",
                     "AddressBook/Sources", source, "AddressBook-v22.abcddb")))
@@ -61,7 +63,7 @@ class AddressBook(object):
 
                     """, k)
         #rows = zip(rows,[number for number in c])
-        rows = [row for row in c]
+        rows = (row for row in c)
 
         return rows
 
@@ -73,7 +75,7 @@ class AddressBook(object):
 
 def output(results):
     """Take the list of results and print it as per mutt's expected output"""
-    address_book = dict(zip([AddressBook.clean_number(row[8]) for row in results], [[format(r[2]),format(r[4]),str(r[0])] for r in results]))
+    address_book = dict(itertools.izip((AddressBook.clean_number(row[8]) for row in results), ([format(r[2]),format(r[4]),str(r[0])] for r in results)))
     #pprint(address_book)
     return address_book
 

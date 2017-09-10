@@ -94,7 +94,7 @@ class TextConversation:
 
     # returns full transcript sorted by date sent (earliest text is tran[0])
     def transcript(self):
-        tran = [m.text for m in sorted(self.messages, key=operator.attrgetter('date'))]
+        tran = (m.text for m in sorted(self.messages, key=operator.attrgetter('date')))
         return tran
 
     def __repr__(self):
@@ -111,12 +111,12 @@ class Conversations:
 
     def all_received_text(self):
         convos = self.text_conversations
-        received = " ".join([m for c in convos for m in c.received_messages()])
+        received = " ".join((m for c in convos for m in c.received_messages()))
         return received
 
     def all_sent_text(self):
         convos = self.text_conversations
-        sent = " ".join([m for c in convos for m in c.sent_messages()])
+        sent = " ".join((m for c in convos for m in c.sent_messages()))
         return sent
 
     def all_text(self):
@@ -137,8 +137,8 @@ class Conversations:
 
     # returns a list of TextConversations with given recipients
     def process_conversations(self, recipients):
-        convos = [TextConversation(get_name_from_address_book(r.phone_or_email),
-                                   get_messages_for_recipient(r.handle_id)) for r in recipients]
+        convos = (TextConversation(get_name_from_address_book(r.phone_or_email),
+                                   get_messages_for_recipient(r.handle_id)) for r in recipients)
         return convos
 
     def __iter__(self):
@@ -250,4 +250,3 @@ if __name__ == '__main__':
     # pprint(Counter(counts).most_common(50))
     # # print '\n\n\n\n'
     # # pprint(Counter(vocab).most_common(50))
-
